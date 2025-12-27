@@ -1,10 +1,14 @@
 using Microsoft.Win32;
 using System.Diagnostics;
-
+using NAudio;
+using CoreAudio;
 namespace MehmetinButonu
 {
     public partial class Form1 : Form
     {
+        public string dark_theme = @"%windir%\Resources\Themes\dark.theme";
+        public string light_theme = @"%windir%\Resources\Themes\aero.theme";
+
         public Form1()
         {
             InitializeComponent();
@@ -14,9 +18,6 @@ namespace MehmetinButonu
         {
             setTheme();
         }
-
-        public string dark_theme = @"%windir%\Resources\Themes\dark.theme";
-        public string light_theme = @"%windir%\Resources\Themes\aero.theme";
 
         public bool isDark(string theme)
         {
@@ -53,5 +54,29 @@ namespace MehmetinButonu
             Process.Start(cmd);
         }
 
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            int sayi = trackBar1.Value;
+            label1.Text = sayi.ToString();
+            setVolume(sayi);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            trackBar1.Minimum = 0;
+            trackBar1.Maximum = 100;
+
+            trackBar1.Value = 50;
+
+
+        }
+
+        public void setVolume(int volume)
+        {
+            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+            var device = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            device.AudioEndpointVolume.MasterVolumeLevelScalar = volume / 100.0f;
+
+        }
     }
 }
